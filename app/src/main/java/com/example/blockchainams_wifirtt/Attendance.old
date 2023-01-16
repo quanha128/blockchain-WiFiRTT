@@ -1,0 +1,303 @@
+package com.example.blockchainams_wifirtt;
+
+import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+import org.web3j.abi.EventEncoder;
+import org.web3j.abi.TypeReference;
+import org.web3j.abi.datatypes.Bool;
+import org.web3j.abi.datatypes.DynamicArray;
+import org.web3j.abi.datatypes.Event;
+import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.datatypes.Utf8String;
+import org.web3j.abi.datatypes.generated.Uint256;
+import org.web3j.crypto.Credentials;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameter;
+import org.web3j.protocol.core.RemoteCall;
+import org.web3j.protocol.core.RemoteFunctionCall;
+import org.web3j.protocol.core.methods.request.EthFilter;
+import org.web3j.protocol.core.methods.response.BaseEventResponse;
+import org.web3j.protocol.core.methods.response.Log;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple4;
+import org.web3j.tx.Contract;
+import org.web3j.tx.TransactionManager;
+import org.web3j.tx.gas.ContractGasProvider;
+
+/**
+ * <p>Auto generated code.
+ * <p><strong>Do not modify!</strong>
+ * <p>Please use the <a href="https://docs.web3j.io/command_line.html">web3j command line tools</a>,
+ * or the org.web3j.codegen.SolidityFunctionWrapperGenerator in the
+ * <a href="https://github.com/web3j/web3j/tree/master/codegen">codegen module</a> to update.
+ *
+ * <p>Generated with web3j version 1.4.2.
+ */
+@SuppressWarnings("rawtypes")
+public class Attendance extends Contract {
+    public static final String BINARY = "608060405234801561001057600080fd5b50600080546001600160a01b03191633179055610c40806100326000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c806375b831871161005b57806375b83187146100f1578063a394f60914610111578063ba37e70f14610124578063e581f9ee1461014757610088565b8063296c30dd1461008d57806332698a09146100b65780633683a51b146100cb57806349f15e9e146100de575b600080fd5b6100a061009b366004610960565b61015c565b6040516100ad9190610a65565b60405180910390f35b6100c96100c4366004610978565b61024b565b005b6100c96100d9366004610978565b610284565b6100c96100ec3660046109b3565b610307565b6101046100ff3660046108ff565b6103a2565b6040516100ad9190610ac5565b61010461011f366004610978565b6103fc565b610137610132366004610978565b6105b7565b6040516100ad9493929190610ad0565b61014f610725565b6040516100ad9190610b09565b606060016000838152602001908152602001600020600301805480602002602001604051908101604052809291908181526020016000905b828210156102405783829060005260206000200180546101b390610b88565b80601f01602080910402602001604051908101604052809291908181526020018280546101df90610b88565b801561022c5780601f106102015761010080835404028352916020019161022c565b820191906000526020600020905b81548152906001019060200180831161020f57829003601f168201915b505050505081526020019060010190610194565b505050509050919050565b6000828152600160208181526040832060030180549283018155835291829020835161027f9391909201919084019061072b565b505050565b60008281526001602052604080822090516004909101906102a6908490610a49565b908152602001604051809103902054905080806102c290610bc3565b9150507fc199d59117dfae0c408c9841110714601ab4c1ab5a28555855873a84f4b052dc838242856040516102fa9493929190610b12565b60405180910390a1505050565b600254600081815260016020818152604090922086815585519092610332928401919087019061072b565b508251610348906002830190602086019061072b565b506002805490600061035983610bc3565b91905055507fe75cc56b09aae2fe392f4fcc8b3869d07ed5bfb11085dd67ef4c79890089c505848487426040516103939493929190610ad0565b60405180910390a15050505050565b6000816040516020016103b59190610a49565b60405160208183030381529060405280519060200120836040516020016103dc9190610a49565b604051602081830303815290604052805190602001201490505b92915050565b6000828152600160205260408120600301815b81548110156105ac576104d482828154811061043b57634e487b7160e01b600052603260045260246000fd5b90600052602060002001805461045090610b88565b80601f016020809104026020016040519081016040528092919081815260200182805461047c90610b88565b80156104c95780601f1061049e576101008083540402835291602001916104c9565b820191906000526020600020905b8154815290600101906020018083116104ac57829003601f168201915b5050505050856103a2565b1561059a57815482906104e990600190610b41565b8154811061050757634e487b7160e01b600052603260045260246000fd5b9060005260206000200182828154811061053157634e487b7160e01b600052603260045260246000fd5b9060005260206000200190805461054790610b88565b6105529291906107af565b508180548061057157634e487b7160e01b600052603160045260246000fd5b60019003818190600052602060002001600061058d919061082a565b90556001925050506103f6565b806105a481610bc3565b91505061040f565b506000949350505050565b600082815260016020819052604080832080549151606094859490938493918201926002830192600401906105ed908a90610a49565b90815260200160405180910390205483805461060890610b88565b80601f016020809104026020016040519081016040528092919081815260200182805461063490610b88565b80156106815780601f1061065657610100808354040283529160200191610681565b820191906000526020600020905b81548152906001019060200180831161066457829003601f168201915b5050505050935082805461069490610b88565b80601f01602080910402602001604051908101604052809291908181526020018280546106c090610b88565b801561070d5780601f106106e25761010080835404028352916020019161070d565b820191906000526020600020905b8154815290600101906020018083116106f057829003601f168201915b50505050509250935093509350935092959194509250565b60025481565b82805461073790610b88565b90600052602060002090601f016020900481019282610759576000855561079f565b82601f1061077257805160ff191683800117855561079f565b8280016001018555821561079f579182015b8281111561079f578251825591602001919060010190610784565b506107ab929150610869565b5090565b8280546107bb90610b88565b90600052602060002090601f0160209004810192826107dd576000855561079f565b82601f106107ee578054855561079f565b8280016001018555821561079f57600052602060002091601f016020900482015b8281111561079f57825482559160010191906001019061080f565b50805461083690610b88565b6000825580601f106108485750610866565b601f0160209004906000526020600020908101906108669190610869565b50565b5b808211156107ab576000815560010161086a565b600082601f83011261088e578081fd5b813567ffffffffffffffff808211156108a9576108a9610bf4565b604051601f8301601f1916810160200182811182821017156108cd576108cd610bf4565b6040528281528483016020018610156108e4578384fd5b82602086016020830137918201602001929092529392505050565b60008060408385031215610911578182fd5b823567ffffffffffffffff80821115610928578384fd5b6109348683870161087e565b93506020850135915080821115610949578283fd5b506109568582860161087e565b9150509250929050565b600060208284031215610971578081fd5b5035919050565b6000806040838503121561098a578182fd5b82359150602083013567ffffffffffffffff8111156109a7578182fd5b6109568582860161087e565b6000806000606084860312156109c7578081fd5b83359250602084013567ffffffffffffffff808211156109e5578283fd5b6109f18783880161087e565b93506040860135915080821115610a06578283fd5b50610a138682870161087e565b9150509250925092565b60008151808452610a35816020860160208601610b58565b601f01601f19169290920160200192915050565b60008251610a5b818460208701610b58565b9190910192915050565b6000602080830181845280855180835260408601915060408482028701019250838701855b82811015610ab857603f19888603018452610aa6858351610a1d565b94509285019290850190600101610a8a565b5092979650505050505050565b901515815260200190565b600060808252610ae36080830187610a1d565b8281036020840152610af58187610a1d565b604084019590955250506060015292915050565b90815260200190565b600085825284602083015283604083015260806060830152610b376080830184610a1d565b9695505050505050565b600082821015610b5357610b53610bde565b500390565b60005b83811015610b73578181015183820152602001610b5b565b83811115610b82576000848401525b50505050565b600281046001821680610b9c57607f821691505b60208210811415610bbd57634e487b7160e01b600052602260045260246000fd5b50919050565b6000600019821415610bd757610bd7610bde565b5060010190565b634e487b7160e01b600052601160045260246000fd5b634e487b7160e01b600052604160045260246000fdfea264697066735822122087288801d6cdcfb31b29000921630065051100c1ddc1d5521eba9004b1e1b80e64736f6c63430008000033";
+
+    public static final String FUNC_ADDCOURSE = "addCourse";
+
+    public static final String FUNC_COMPARESTRING = "compareString";
+
+    public static final String FUNC_CREATESTUDENT = "createStudent";
+
+    public static final String FUNC_DOATTENDANCE = "doAttendance";
+
+    public static final String FUNC_GETPARTICULARSTUDENT = "getParticularStudent";
+
+    public static final String FUNC_GETREGISTEREDCOURSE = "getRegisteredCourse";
+
+    public static final String FUNC_REMOVECOURSE = "removeCourse";
+
+    public static final String FUNC_STUDENTCOUNT = "studentCount";
+
+    public static final Event ATTENDANCERECORDEVENT_EVENT = new Event("AttendanceRecordEvent",
+            Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}, new TypeReference<Utf8String>() {}));
+    ;
+
+    public static final Event STUDENTCREATIONEVENT_EVENT = new Event("studentCreationEvent",
+            Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}));
+    ;
+
+    @Deprecated
+    protected Attendance(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
+        super(BINARY, contractAddress, web3j, credentials, gasPrice, gasLimit);
+    }
+
+    protected Attendance(String contractAddress, Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
+        super(BINARY, contractAddress, web3j, credentials, contractGasProvider);
+    }
+
+    @Deprecated
+    protected Attendance(String contractAddress, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+        super(BINARY, contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+    }
+
+    protected Attendance(String contractAddress, Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+        super(BINARY, contractAddress, web3j, transactionManager, contractGasProvider);
+    }
+
+//    public static List<AttendanceRecordEventEventResponse> getAttendanceRecordEventEvents(TransactionReceipt transactionReceipt) {
+//        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(ATTENDANCERECORDEVENT_EVENT, transactionReceipt);
+//        ArrayList<AttendanceRecordEventEventResponse> responses = new ArrayList<AttendanceRecordEventEventResponse>(valueList.size());
+//        for (Contract.EventValuesWithLog eventValues : valueList) {
+//            AttendanceRecordEventEventResponse typedResponse = new AttendanceRecordEventEventResponse();
+//            typedResponse.log = eventValues.getLog();
+//            typedResponse.studentId = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
+//            typedResponse.attVal = (BigInteger) eventValues.getNonIndexedValues().get(1).getValue();
+//            typedResponse.recordDate = (BigInteger) eventValues.getNonIndexedValues().get(2).getValue();
+//            typedResponse.courseName = (String) eventValues.getNonIndexedValues().get(3).getValue();
+//            responses.add(typedResponse);
+//        }
+//        return responses;
+//    }
+
+    public Flowable<AttendanceRecordEventEventResponse> attendanceRecordEventEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(new Function<Log, AttendanceRecordEventEventResponse>() {
+            @Override
+            public AttendanceRecordEventEventResponse apply(Log log) {
+                Contract.EventValuesWithLog eventValues = extractEventParametersWithLog(ATTENDANCERECORDEVENT_EVENT, log);
+                AttendanceRecordEventEventResponse typedResponse = new AttendanceRecordEventEventResponse();
+                typedResponse.log = log;
+                typedResponse.studentId = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
+                typedResponse.attVal = (BigInteger) eventValues.getNonIndexedValues().get(1).getValue();
+                typedResponse.recordDate = (BigInteger) eventValues.getNonIndexedValues().get(2).getValue();
+                typedResponse.courseName = (String) eventValues.getNonIndexedValues().get(3).getValue();
+                return typedResponse;
+            }
+        });
+    }
+
+    public Flowable<AttendanceRecordEventEventResponse> attendanceRecordEventEventFlowable(DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(ATTENDANCERECORDEVENT_EVENT));
+        return attendanceRecordEventEventFlowable(filter);
+    }
+
+//    public static List<StudentCreationEventEventResponse> getStudentCreationEventEvents(TransactionReceipt transactionReceipt) {
+//        List<Contract.EventValuesWithLog> valueList = staticExtractEventParametersWithLog(STUDENTCREATIONEVENT_EVENT, transactionReceipt);
+//        ArrayList<StudentCreationEventEventResponse> responses = new ArrayList<StudentCreationEventEventResponse>(valueList.size());
+//        for (Contract.EventValuesWithLog eventValues : valueList) {
+//            StudentCreationEventEventResponse typedResponse = new StudentCreationEventEventResponse();
+//            typedResponse.log = eventValues.getLog();
+//            typedResponse.fName = (String) eventValues.getNonIndexedValues().get(0).getValue();
+//            typedResponse.lName = (String) eventValues.getNonIndexedValues().get(1).getValue();
+//            typedResponse.age = (BigInteger) eventValues.getNonIndexedValues().get(2).getValue();
+//            typedResponse.createdDate = (BigInteger) eventValues.getNonIndexedValues().get(3).getValue();
+//            responses.add(typedResponse);
+//        }
+//        return responses;
+//    }
+
+    public Flowable<StudentCreationEventEventResponse> studentCreationEventEventFlowable(EthFilter filter) {
+        return web3j.ethLogFlowable(filter).map(new Function<Log, StudentCreationEventEventResponse>() {
+            @Override
+            public StudentCreationEventEventResponse apply(Log log) {
+                Contract.EventValuesWithLog eventValues = extractEventParametersWithLog(STUDENTCREATIONEVENT_EVENT, log);
+                StudentCreationEventEventResponse typedResponse = new StudentCreationEventEventResponse();
+                typedResponse.log = log;
+                typedResponse.fName = (String) eventValues.getNonIndexedValues().get(0).getValue();
+                typedResponse.lName = (String) eventValues.getNonIndexedValues().get(1).getValue();
+                typedResponse.age = (BigInteger) eventValues.getNonIndexedValues().get(2).getValue();
+                typedResponse.createdDate = (BigInteger) eventValues.getNonIndexedValues().get(3).getValue();
+                return typedResponse;
+            }
+        });
+    }
+
+    public Flowable<StudentCreationEventEventResponse> studentCreationEventEventFlowable(DefaultBlockParameter startBlock, DefaultBlockParameter endBlock) {
+        EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
+        filter.addSingleTopic(EventEncoder.encode(STUDENTCREATIONEVENT_EVENT));
+        return studentCreationEventEventFlowable(filter);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> addCourse(BigInteger _studId, String course) {
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
+                FUNC_ADDCOURSE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(_studId),
+                        new org.web3j.abi.datatypes.Utf8String(course)),
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<Boolean> compareString(String a, String b) {
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_COMPARESTRING,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.Utf8String(a),
+                        new org.web3j.abi.datatypes.Utf8String(b)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
+        return executeRemoteCallSingleValueReturn(function, Boolean.class);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> createStudent(BigInteger _age, String _fName, String _lName) {
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
+                FUNC_CREATESTUDENT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(_age),
+                        new org.web3j.abi.datatypes.Utf8String(_fName),
+                        new org.web3j.abi.datatypes.Utf8String(_lName)),
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> doAttendance(BigInteger _studId, String course) {
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
+                FUNC_DOATTENDANCE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(_studId),
+                        new org.web3j.abi.datatypes.Utf8String(course)),
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<Tuple4<String, String, BigInteger, BigInteger>> getParticularStudent(BigInteger _studId, String course) {
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_GETPARTICULARSTUDENT,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(_studId),
+                        new org.web3j.abi.datatypes.Utf8String(course)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}));
+        return new RemoteFunctionCall<Tuple4<String, String, BigInteger, BigInteger>>(function,
+                new Callable<Tuple4<String, String, BigInteger, BigInteger>>() {
+                    @Override
+                    public Tuple4<String, String, BigInteger, BigInteger> call() throws Exception {
+                        List<Type> results = executeCallMultipleValueReturn(function);
+                        return new Tuple4<String, String, BigInteger, BigInteger>(
+                                (String) results.get(0).getValue(),
+                                (String) results.get(1).getValue(),
+                                (BigInteger) results.get(2).getValue(),
+                                (BigInteger) results.get(3).getValue());
+                    }
+                });
+    }
+
+    public RemoteFunctionCall<List> getRegisteredCourse(BigInteger _studId) {
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_GETREGISTEREDCOURSE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(_studId)),
+                Arrays.<TypeReference<?>>asList(new TypeReference<DynamicArray<Utf8String>>() {}));
+        return new RemoteFunctionCall<List>(function,
+                new Callable<List>() {
+                    @Override
+                    @SuppressWarnings("unchecked")
+                    public List call() throws Exception {
+                        List<Type> result = (List<Type>) executeCallSingleValueReturn(function, List.class);
+                        return convertToNative(result);
+                    }
+                });
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> removeCourse(BigInteger _studId, String course) {
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
+                FUNC_REMOVECOURSE,
+                Arrays.<Type>asList(new org.web3j.abi.datatypes.generated.Uint256(_studId),
+                        new org.web3j.abi.datatypes.Utf8String(course)),
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
+    }
+
+    public RemoteFunctionCall<BigInteger> studentCount() {
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(FUNC_STUDENTCOUNT,
+                Arrays.<Type>asList(),
+                Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}));
+        return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    @Deprecated
+    public static Attendance load(String contractAddress, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
+        return new Attendance(contractAddress, web3j, credentials, gasPrice, gasLimit);
+    }
+
+    @Deprecated
+    public static Attendance load(String contractAddress, Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+        return new Attendance(contractAddress, web3j, transactionManager, gasPrice, gasLimit);
+    }
+
+    public static Attendance load(String contractAddress, Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
+        return new Attendance(contractAddress, web3j, credentials, contractGasProvider);
+    }
+
+    public static Attendance load(String contractAddress, Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+        return new Attendance(contractAddress, web3j, transactionManager, contractGasProvider);
+    }
+
+    public static RemoteCall<Attendance> deploy(Web3j web3j, Credentials credentials, ContractGasProvider contractGasProvider) {
+        return deployRemoteCall(Attendance.class, web3j, credentials, contractGasProvider, BINARY, "");
+    }
+
+    public static RemoteCall<Attendance> deploy(Web3j web3j, TransactionManager transactionManager, ContractGasProvider contractGasProvider) {
+        return deployRemoteCall(Attendance.class, web3j, transactionManager, contractGasProvider, BINARY, "");
+    }
+
+    @Deprecated
+    public static RemoteCall<Attendance> deploy(Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
+        return deployRemoteCall(Attendance.class, web3j, credentials, gasPrice, gasLimit, BINARY, "");
+    }
+
+    @Deprecated
+    public static RemoteCall<Attendance> deploy(Web3j web3j, TransactionManager transactionManager, BigInteger gasPrice, BigInteger gasLimit) {
+        return deployRemoteCall(Attendance.class, web3j, transactionManager, gasPrice, gasLimit, BINARY, "");
+    }
+
+    public static class AttendanceRecordEventEventResponse extends BaseEventResponse {
+        public BigInteger studentId;
+
+        public BigInteger attVal;
+
+        public BigInteger recordDate;
+
+        public String courseName;
+    }
+
+    public static class StudentCreationEventEventResponse extends BaseEventResponse {
+        public String fName;
+
+        public String lName;
+
+        public BigInteger age;
+
+        public BigInteger createdDate;
+    }
+}
